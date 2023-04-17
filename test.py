@@ -1,66 +1,75 @@
+# Import the necessary libraries.
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from cvzone.ClassificationModule import Classifier
 import numpy as np
+import
 import math
 
+# Initialize the video capture object and the hand detector.
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
+
+# Load the classification model.
 classifier = Classifier("Model/keras_model.h5", "Model/labels.txt")
 
-offset = 20
-imgSize = 300
+# Define some constants.
+offset = 20  # The offset in pixels to crop the hand image.
+imgSize = 300  # The size of the cropped hand image.
+folder = "alphabet_data/C"  # The folder to save the cropped hand images.
+counter = 0  # The counter for the number of cropped hand images.
 
-folder = "alphabet_data/C"
-counter = 0
-
-#TODO how are we supposed to deal with J and Z
-
+# Create a list of labels.
 labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "W",
           "X", "Y", "Z"]
 
+# Start the main loop.
 while True:
+    # Read a frame from the video.
     success, img = cap.read()
-    imgOutput = img.copy()
-    hands, img = detector.findHands(img)
-    if hands:
-        hand = hands[0]
-        x, y, w, h = hand['bbox']
 
-        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255
-        imgCrop = img[y - offset:y + h + offset, x - offset:x + w + offset]
+    # If the frame was read successfully, then...
+    if success:
+        # Find the hands in the frame.
+        hands, img = detector.findHands(img)
 
-        imgCropShape = imgCrop.shape
+        # If hands were found, then...
+        if hands:
+            # Get the first hand.
+            hand = hands[0]
 
-        aspectRatio = h / w
+            # Get the bounding box of the hand.
+            x, y, w, h = hand['bbox']
 
-        if aspectRatio > 1:
-            k = imgSize / h
-            wCal = math.ceil(k * w)
-            imgResize = cv2.resize(imgCrop, (wCal, imgSize))
-            imgResizeShape = imgResize.shape
-            wGap = math.ceil((imgSize - wCal) / 2)
-            imgWhite[:, wGap:wCal + wGap] = imgResize
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
-            print(prediction, index)
+            # Crop the hand image.
+            imgCrop = img[y - offset:y + h + offset, x - offset:x + w + offset]
 
-        else:
-            k = imgSize / w
-            hCal = math.ceil(k * h)
-            imgResize = cv2.resize(imgCrop, (imgSize, hCal))
-            imgResizeShape = imgResize.shape
-            hGap = math.ceil((imgSize - hCal) / 2)
-            imgWhite[hGap:hCal + hGap, :] = imgResize
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
+            # Resize the cropped image to the desired size.
+            imgResize = cv2.resize(imgCrop, (imgSize, imgSize))
 
-        cv2.rectangle(imgOutput, (x - offset, y - offset - 50),
-                      (x - offset + 90, y - offset - 50 + 50), (255, 0, 255), cv2.FILLED)
-        cv2.putText(imgOutput, labels[index], (x, y - 26), cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
-        cv2.rectangle(imgOutput, (x - offset, y - offset),
-                      (x + w + offset, y + h + offset), (255, 0, 255), 4)
+            # Get the prediction from the classification model.
+            prediction, index = classifier.getPrediction(imgResize, draw=False)
 
-        cv2.imshow("ImageCrop", imgCrop)
-        cv2.imshow("ImageWhite", imgWhite)
+            # Display the prediction on the image.
+            cv2.putText(img, labels[index], (x, y - 26), cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
 
-    cv2.imshow("Image", imgOutput)
-    cv2.waitKey(1)
+            # Save the cropped image to a file.
+            cv2.imwrite(f"{folder}/{counter}.jpg", imgCrop)
+            counter += 1
+
+        # Display the image.
+        cv2.imshow("Image", img)
+
+    # Wait for a key press.
+    key = cv2.waitKey(1)
+
+    # If the `q` key was pressed, then...
+    if key == ord("q"):
+        # Break out of the main loop.
+        break
+
+# Release the video capture object.
+cap.release()
+
+# Close all open windows.
+cv2.destroyAllWindows()
