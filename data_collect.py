@@ -10,7 +10,7 @@ detector = HandDetector(maxHands=1)  # initialize a HandDetector object to detec
 offset = 20  # set the offset value for cropping the hand region
 imgSize = 300  # set the size of the output image after resizing
 
-folder = "Data/Z"  # set the folder to store the captured images
+folder = "alphabet_data/C"  # set the folder to store the captured images
 counter = 0  # set the counter for the number of images captured
 
 # cv2 = 4.6.0
@@ -73,5 +73,6 @@ while True:
     key = cv2.waitKey(1)  # wait for a key press
     if key == ord("s"):  # if the "s" key is pressed, save the resized hand image to a file
         counter += 1  # increment the counter
+        print(counter)
         cv2.imwrite(f'{folder}/Image_{time.time()}.jpg', imgWhite)  # save the image to a file with 
         
