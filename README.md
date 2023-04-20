@@ -24,3 +24,14 @@ Install requirements with pip
 ```sh
 pip install -r requirements.txt
 ```
+
+# Next to do
+
+- Use both left and right to sign the alphabet when taking pictures
+## Next
+- now we have to
+  - 1:  tone hyperparams(since the model is overfit to the training data) 
+  - 2: export the model
+  - 3: get our model to work in test.py
+  - 4: get rid of allowing popup when training the model
+  - 5: if need, add git_ignore file so git ignores the image files

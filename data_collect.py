@@ -5,6 +5,7 @@ import math
 import time
 
 
+
 # takes a picture and places it into folder
 def take_picture(key, counter, folder):
     
