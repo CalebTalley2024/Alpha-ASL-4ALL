@@ -16,12 +16,16 @@ classifier = Classifier("Model/keras_model.h5", "Model/labels.txt")
 # Define some constants.
 offset = 20  # The offset in pixels to crop the hand image.
 imgSize = 300  # The size of the cropped hand image.
-folder = "alphabet_data/C"  # The folder to save the cropped hand images.
+folder = "alphabet_data/C"  # The folder to save the cropped hand images
+folder = "other"
 counter = 0  # The counter for the number of cropped hand images.
 
 # Create a list of labels.
-labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "W",
-          "X", "Y", "Z"]
+# labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "W",
+#           "X", "Y", "Z"]
+
+# 5 letter prototype
+labels = ["A","B","C","D","E"]
 
 # Start the main loop.
 while True:
